@@ -76,7 +76,15 @@ Durante el `--guided`, puedes configurar:
 
 ## 📮 Endpoints disponibles
 
-Cuando se despliega el proyecto podrás ver en consola la url creada.
+Al final del despliegue, deberías ver algo como 
+
+```bash
+Outputs
+--------------------------------------------------------------------------------------------------
+Key                 AppointmentApiGateway
+Description         Base URL de la API Gateway
+Value               https://a1b2c3d4.execute-api.us-east-1.amazonaws.com/dev
+```
 
 > Base URL: `https://{api-id}.execute-api.{region}.amazonaws.com/{stage}/`
 
