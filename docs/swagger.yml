@@ -131,5 +131,8 @@ paths:
                         type: string
                         example: "ConditionalCheckFailedException: The conditional request failed..."
 
+servers:
+  - url: https://kcriqwwrl8.execute-api.us-east-2.amazonaws.com/dev
+    description: "API Gateway base URL"
 components:
   schemas: {}
