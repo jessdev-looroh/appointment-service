@@ -5,7 +5,7 @@ info:
   description: API para gestionar citas (appointments)
 
 paths:
-  /api/appointments/{insuredId}:
+  /api/appointment/{insuredId}:
     get:
       summary: Obtener citas por insuredId
       parameters:
@@ -46,10 +46,9 @@ paths:
                         countryISO:
                           type: string
                           example: PE
-                  error:
-                    type: object
-                    example: {}
-  /api/appointments:
+
+
+  /api/appointment:
     post:
       summary: Crear una nueva cita
       requestBody:

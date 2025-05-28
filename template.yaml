@@ -46,11 +46,6 @@ Resources:
     Properties:
       Name: !Sub appointment-api-rest-${Stage}
       StageName: !Ref Stage
-      DefinitionUri: docs/swagger.yml
-      Cors:
-        AllowHeaders: "'*'"
-        AllowMethods: "'*'"
-        AllowOrigin: "'*'"
 
   ##################### FUNCTIONS #######################
 
