@@ -377,3 +377,8 @@ Resources:
         - Arn: !GetAtt UpdateAppointmentStatusSQS.Arn
           Id: "UpdateAppointmentStatusSQS"
 
+
+Outputs:
+  ApiUrl:
+    Description: "Base URL de la API Gateway"
+    Value: !Sub "https://${AppointmentApiGateway}.execute-api.${AWS::Region}.amazonaws.com/${Stage}"
