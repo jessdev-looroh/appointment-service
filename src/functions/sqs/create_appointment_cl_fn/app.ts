@@ -16,7 +16,7 @@ export const createAppointmentHandler = async (event: SQSEvent): Promise<void> =
             if (wasCreated) await eventBridge.emitAppointmentCreated(appointment);
             else console.log('[INFO] (createAppointmentHandler): appointment was not created!');
         }
-    } catch (err: unknown) {
-        console.error(err);
+    } catch (err) {
+        console.error('[ERROR] (createAppointmentHandler): ', err);
     }
 };

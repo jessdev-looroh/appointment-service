@@ -4,7 +4,6 @@ import { AppointmentStatus } from '../enums/appointmentStatus';
 import { Response } from '../interfaces/response/response';
 import { StatusCodeEnum } from '../enums/statusCode';
 import { StatusTextEnum } from '../enums/statusText';
-import { publishToNewAppointmentTopic } from './sns';
 import { formatErrorResponse } from '../utils/errorResponse';
 
 const ddbClient: DynamoDBClient = new DynamoDBClient({});
@@ -38,6 +37,7 @@ export const createAppointment = async (appointment: Appointment) => {
             statusCode: wasCreated ? StatusCodeEnum.CREATED : StatusCodeEnum.INTERNAL,
             statusText: wasCreated ? StatusTextEnum.CREATED : StatusTextEnum.INTERNAL,
             data: [appointment],
+            message: 'el agendamiento está en proceso',
             error: {},
         };
     } catch (err) {
