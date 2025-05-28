@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>API Documentation - Appointment Service</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/swagger-ui-dist/swagger-ui.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="swagger-ui"></div>
+    <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist/swagger-ui-bundle.js"></script>
+    <script>
+      window.onload = () => {
+        SwaggerUIBundle({
+          url: "../swagger.yaml", // Ajusta la ruta si es necesario
+          dom_id: "#swagger-ui",
+          deepLinking: true,
+          presets: [
+            SwaggerUIBundle.presets.apis,
+            SwaggerUIBundle.SwaggerUIStandalonePreset,
+          ],
+          layout: "BaseLayout",
+        });
+      };
+    </script>
+  </body>
+</html>
