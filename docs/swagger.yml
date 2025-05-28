@@ -1,0 +1,136 @@
+openapi: 3.0.3
+info:
+  title: Appointment Service API
+  version: 1.0.0
+  description: API para gestionar citas (appointments)
+
+paths:
+  /api/appointments/{insuredId}:
+    get:
+      summary: Obtener citas por insuredId
+      parameters:
+        - name: insuredId
+          in: path
+          description: ID del asegurado para filtrar citas
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de citas encontradas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 200
+                  statusText:
+                    type: string
+                    example: OK
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        appointmentStatus:
+                          type: string
+                          example: pending
+                        insuredId:
+                          type: string
+                          example: "00002"
+                        scheduleId:
+                          type: integer
+                          example: 1
+                        countryISO:
+                          type: string
+                          example: PE
+                  error:
+                    type: object
+                    example: {}
+  /api/appointments:
+    post:
+      summary: Crear una nueva cita
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                insuredId:
+                  type: string
+                  example: "00002"
+                scheduleId:
+                  type: integer
+                  example: 8
+                countryISO:
+                  type: string
+                  example: PE
+              required:
+                - insuredId
+                - scheduleId
+                - countryISO
+      responses:
+        '201':
+          description: Cita creada exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 201
+                  statusText:
+                    type: string
+                    example: CREATED SUCCESSFUL
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        insuredId:
+                          type: string
+                          example: "00002"
+                        scheduleId:
+                          type: integer
+                          example: 8
+                        countryISO:
+                          type: string
+                          example: PE
+                  message:
+                    type: string
+                    example: "el agendamiento está en proceso"
+                  error:
+                    type: object
+                    example: {}
+        '409':
+          description: Conflicto, cita ya existe
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 409
+                  statusText:
+                    type: string
+                    example: CONFLICT
+                  data:
+                    type: array
+                    example: []
+                  error:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: "Appointment already exists"
+                      stack:
+                        type: string
+                        example: "ConditionalCheckFailedException: The conditional request failed..."
+
+components:
+  schemas: {}
