@@ -197,20 +197,17 @@ Resources:
   UpdateAppointmentFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/functions/eventbridge/update_appointment_fn
+      CodeUri: src/functions/sqs/update_appointment_fn
       Handler: app.updateAppointmentHandler
       Environment:
         Variables:
           DYNAMO_APPOINTMENT_TABLE_NAME: !Ref AppointmentsTable
       Events:
-        UpdateAppointmentEvent:
-          Type: EventBridgeRule
+        MySQSEvent:
+          Type: SQS
           Properties:
-            Pattern:
-              source:
-                - "lambda.create-appointment-fn"
-              detail-type:
-                - "appointment.created"
+            Queue: !GetAtt UpdateAppointmentStatusSQS.Arn
+            BatchSize: 10
       Policies:
         - SQSPollerPolicy:
             QueueName: !Ref NewAppointmentChileSQS
@@ -272,7 +269,7 @@ Resources:
   EventNewAppointmentSNS:
     Type: AWS::SNS::Topic
     Properties:
-      TopicName: !Sub "event_new_appointment_${Stage}"
+      TopicName: !Sub "event-new-appointment-${Stage}"
       # Subscription:
       #   - Protocol: sqs
       #     Endpoint: !GetAtt NewAppointmentPeruSQS.Arn
@@ -284,14 +281,21 @@ Resources:
   NewAppointmentPeruSQS:
     Type: AWS::SQS::Queue
     Properties:
-      QueueName: !Sub "new_appointment_pe_${Stage}"
+      QueueName: !Sub "new-appointment-pe-${Stage}"
       VisibilityTimeout: 40
 
   NewAppointmentChileSQS:
     Type: AWS::SQS::Queue
     Properties:
-      QueueName: !Sub "new_appointment_cl_${Stage}"
+      QueueName: !Sub "new-appointment-cl-${Stage}"
       VisibilityTimeout: 40
+
+  UpdateAppointmentStatusSQS:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: !Sub "updated-appointment-status-${Stage}"
+        VisibilityTimeout: 40
+    
 
   ##################### POLICY #######################
   NewAppointmentSQSPolicy:
@@ -322,7 +326,22 @@ Resources:
         - !Ref NewAppointmentPeruSQS
         - !Ref NewAppointmentChileSQS
 
+  UpdateAppointmentStatusSQSPolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      Queues:
+        - !Ref UpdateAppointmentStatusSQS
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: events.amazonaws.com
+            Action: "sqs:SendMessage"
+            Resource: !GetAtt UpdateAppointmentStatusSQS.Arn
+
   ##################### SUBSCRIPTION #######################
+
   NewAppointmentPeruSQSSubscription:
     Type: AWS::SNS::Subscription
     Properties:
@@ -342,16 +361,19 @@ Resources:
       TopicArn: !Ref EventNewAppointmentSNS
       FilterPolicy:
         countryISO: ["CL"]
-# Outputs:
-#   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
-#   # Find out more about other implicit resources you can reference within SAM
-#   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
-#   HelloWorldApi:
-#     Description: "API Gateway endpoint URL for Prod stage for Hello World function"
-#     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
-#   HelloWorldFunction:
-#     Description: "Hello World Lambda Function ARN"
-#     Value: !GetAtt HelloWorldFunction.Arn
-#   HelloWorldFunctionIamRole:
-#     Description: "Implicit IAM Role created for Hello World function"
-#     Value: !GetAtt HelloWorldFunctionRole.Arn
+
+  ##################### EVENTBRIDGE #######################
+  
+  UpdateAppointmentEventRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: UpdateAppointmentEventRule
+      EventPattern:
+        source:
+          - "lambda.create-appointment-fn"
+        detail-type:
+          - "appointment.created"
+      Targets:
+        - Arn: !GetAtt UpdateAppointmentStatusSQS.Arn
+          Id: "UpdateAppointmentStatusSQS"
+
