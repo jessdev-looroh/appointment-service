@@ -1,0 +1,8 @@
+export enum StatusTextEnum {
+    OK = 'OK',
+    NOT_FOUND = 'NOT FOUND',
+    BAD_REQUEST = 'BAD REQUEST',
+    CREATED = 'CREATED SUCCESSFUL',
+    FORBIDDEN = 'NO AUTHORIZATION',
+    INTERNAL = 'INTERNAL SERVER ERROR',
+}

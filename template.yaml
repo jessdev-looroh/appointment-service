@@ -1,0 +1,357 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Serverless application for scheduling medical appointments.
+
+Parameters:
+  Stage:
+    Type: String
+    Default: dev
+    AllowedValues:
+      - dev
+      - prod
+    Description: "Define de environment deploy"
+  DbHostCl:
+    Type: String
+  DbNameCl:
+    Type: String
+  DbUserCl:
+    Type: String
+  DbPassCl:
+    Type: String
+  DbHostPe:
+    Type: String
+  DbNamePe:
+    Type: String
+  DbUserPe:
+    Type: String
+  DbPassPe:
+    Type: String
+
+Globals:
+  Function:
+    Timeout: 40
+    Runtime: nodejs18.x
+    Architectures:
+      - x86_64
+    Environment:
+      Variables:
+        CORS_HEADERS: '{"Access-Control-Allow-Origin": "*", "Access-Control-Allow-Methods": "*", "Access-Control-Allow-Headers": "*"}'
+
+Resources:
+  ##################### API GATEWAY #######################
+
+  AppointmentApiGateway:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: !Sub appointment-api-rest-${Stage}
+      StageName: !Ref Stage
+      Cors:
+        AllowHeaders: "'*'"
+        AllowMethods: "'*'"
+        AllowOrigin: "'*'"
+
+  ##################### FUNCTIONS #######################
+
+  GetAppointmentFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/functions/http/get_appointment_fn
+      Handler: app.getAppointmentsByInsuredIdHandler
+      Events:
+        ApiGateway:
+          Type: Api
+          Properties:
+            Path: /api/appointment/{insuredId}
+            Method: get
+            RestApiId: !Ref AppointmentApiGateway
+      Environment:
+        Variables:
+          DYNAMO_APPOINTMENT_TABLE_NAME: !Ref AppointmentsTable
+      Policies:
+        - Statement:
+            - Sid: DynamoDBQuery
+              Effect: Allow
+              Action:
+                - dynamodb:Query
+              Resource: !GetAtt AppointmentsTable.Arn
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        Sourcemap: true
+        EntryPoints:
+          - app.ts
+
+  PostAppointmentFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/functions/http/post_appointment_fn
+      Handler: app.createAppointmentHandler
+      Environment:
+        Variables:
+          DYNAMO_APPOINTMENT_TABLE_NAME: !Ref AppointmentsTable
+          EVENT_NEW_APPOINTMENT_TOPIC: !Ref EventNewAppointmentSNS
+
+      Policies:
+        - Statement:
+            - Sid: DynamoDBPut
+              Effect: Allow
+              Action:
+                - dynamodb:PutItem
+              Resource: !GetAtt AppointmentsTable.Arn
+            - Sid: SNSPublish
+              Effect: Allow
+              Action:
+                - sns:Publish
+              Resource: !Ref EventNewAppointmentSNS
+        
+          
+      Events:
+        ApiGateway:
+          Type: Api
+          Properties:
+            Path: /api/appointment
+            Method: post
+            RestApiId: !Ref AppointmentApiGateway
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        Sourcemap: true
+        EntryPoints:
+          - app.ts
+
+  CreateAppointmentPeruFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/functions/sqs/create_appointment_pe_fn
+      Handler: app.createAppointmentHandler
+      Environment:
+        Variables:
+          DB_HOST_PE: !Ref DbHostPe
+          DB_NAME_PE: !Ref DbNamePe
+          DB_USER_PE: !Ref DbUserPe
+          DB_PASSWORD_PE: !Ref DbPassPe
+          SOURCE: lambda.create-appointment-fn
+      Events:
+        MySQSEvent:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt NewAppointmentPeruSQS.Arn
+            BatchSize: 10
+      Policies:
+        - Statement:
+          - Effect: Allow
+            Action:
+              - events:PutEvents
+            Resource: "*"
+        - SQSPollerPolicy:
+            QueueName: !Ref NewAppointmentPeruSQS
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        Sourcemap: true
+        EntryPoints:
+          - app.ts
+
+  CreateAppointmentChileFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/functions/sqs/create_appointment_cl_fn
+      Handler: app.createAppointmentHandler
+      Environment:
+        Variables:
+          DB_HOST_CL: !Ref DbHostCl
+          DB_NAME_CL: !Ref DbNameCl
+          DB_USER_CL: !Ref DbUserCl
+          DB_PASSWORD_CL: !Ref DbPassCl
+          SOURCE: lambda.create-appointment-fn
+      Events:
+        MySQSEvent:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt NewAppointmentChileSQS.Arn
+            BatchSize: 10
+      Policies:
+        - Statement:
+          - Effect: Allow
+            Action:
+              - events:PutEvents
+            Resource: "*"
+        - SQSPollerPolicy:
+            QueueName: !Ref NewAppointmentChileSQS
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        Sourcemap: true
+        EntryPoints:
+          - app.ts
+
+  UpdateAppointmentFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/functions/eventbridge/update_appointment_fn
+      Handler: app.updateAppointmentHandler
+      Environment:
+        Variables:
+          DYNAMO_APPOINTMENT_TABLE_NAME: !Ref AppointmentsTable
+      Events:
+        UpdateAppointmentEvent:
+          Type: EventBridgeRule
+          Properties:
+            Pattern:
+              source:
+                - "lambda.create-appointment-fn"
+              detail-type:
+                - "appointment.created"
+      Policies:
+        - SQSPollerPolicy:
+            QueueName: !Ref NewAppointmentChileSQS
+        - Statement:
+          - Sid: AllowUpdateAppointment
+            Effect: Allow
+            Action:
+              - dynamodb:UpdateItem
+            Resource: !GetAtt AppointmentsTable.Arn
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        Sourcemap: true
+        EntryPoints:
+          - app.ts
+  ##################### DYNAMO TABLE #######################
+  # No necesitas modificar el esquema de atributos en el template.yaml para campos como appointmentStatus
+  # si no son parte de las claves. DynamoDB es esquemaless en los atributos no indexados.
+  # appointmentStatus: SCHEDULED | COMPLETED
+
+  AppointmentsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub "appointments_table_${Stage}"
+      BillingMode: PROVISIONED
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+      AttributeDefinitions:
+        - AttributeName: PK
+          AttributeType: S
+        - AttributeName: SK
+          AttributeType: S
+        - AttributeName: countryISO
+          AttributeType: S
+        - AttributeName: scheduleId
+          AttributeType: N
+      KeySchema:
+        - AttributeName: PK
+          KeyType: HASH
+        - AttributeName: SK
+          KeyType: RANGE
+      GlobalSecondaryIndexes:
+        - IndexName: CountryScheduleIndex
+          KeySchema:
+            - AttributeName: countryISO
+              KeyType: HASH
+            - AttributeName: scheduleId
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: 1
+            WriteCapacityUnits: 1
+
+  ##################### SNS #######################
+  EventNewAppointmentSNS:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: !Sub "event_new_appointment_${Stage}"
+      # Subscription:
+      #   - Protocol: sqs
+      #     Endpoint: !GetAtt NewAppointmentPeruSQS.Arn
+      #   - Protocol: sqs
+      #     Endpoint: !GetAtt NewAppointmentChileSQS.Arn
+
+  ##################### SQS #######################
+  
+  NewAppointmentPeruSQS:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub "new_appointment_pe_${Stage}"
+      VisibilityTimeout: 40
+
+  NewAppointmentChileSQS:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub "new_appointment_cl_${Stage}"
+      VisibilityTimeout: 40
+
+  ##################### POLICY #######################
+  NewAppointmentSQSPolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: new-appointment-peru-policy
+            Effect: Allow
+            Principal:
+              Service: "sns.amazonaws.com"
+            Resource: !GetAtt NewAppointmentPeruSQS.Arn
+            Action: SQS:SendMessage
+            Condition:
+              ArnEquals:
+                aws:SourceArn: !Ref EventNewAppointmentSNS
+          - Sid: new-appointment-chile-policy
+            Effect: Allow
+            Principal:
+              Service: "sns.amazonaws.com"
+            Resource: !GetAtt NewAppointmentChileSQS.Arn
+            Action: SQS:SendMessage
+            Condition:
+              ArnEquals:
+                aws:SourceArn: !Ref EventNewAppointmentSNS
+      Queues:
+        - !Ref NewAppointmentPeruSQS
+        - !Ref NewAppointmentChileSQS
+
+  ##################### SUBSCRIPTION #######################
+  NewAppointmentPeruSQSSubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      Protocol: sqs
+      Endpoint: !GetAtt NewAppointmentPeruSQS.Arn
+      Region: !Sub "${AWS::Region}"
+      TopicArn: !Ref EventNewAppointmentSNS
+      FilterPolicy:
+        countryISO: ["PE"]
+
+  NewAppointmentChileSQSSubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      Protocol: sqs
+      Endpoint: !GetAtt NewAppointmentChileSQS.Arn
+      Region: !Sub "${AWS::Region}"
+      TopicArn: !Ref EventNewAppointmentSNS
+      FilterPolicy:
+        countryISO: ["CL"]
+# Outputs:
+#   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
+#   # Find out more about other implicit resources you can reference within SAM
+#   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
+#   HelloWorldApi:
+#     Description: "API Gateway endpoint URL for Prod stage for Hello World function"
+#     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
+#   HelloWorldFunction:
+#     Description: "Hello World Lambda Function ARN"
+#     Value: !GetAtt HelloWorldFunction.Arn
+#   HelloWorldFunctionIamRole:
+#     Description: "Implicit IAM Role created for Hello World function"
+#     Value: !GetAtt HelloWorldFunctionRole.Arn
