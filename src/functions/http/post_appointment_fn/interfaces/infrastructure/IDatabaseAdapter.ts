@@ -1,12 +1,12 @@
 import { Appointment } from "../../schemas/appointment";
 
-export interface SaveAdapter {
+export interface ISaveAdapter {
   save(appointment: Appointment): Promise<boolean>;
 }
 
-export interface GetAllByInsuredIdAdapter {
+export interface IGetAllByInsuredIdAdapter {
   getAllByInsuredId(insuredId: string): Promise<Appointment[]>;
 }
 
 
-export type FullDatabaseAdapter = SaveAdapter & GetAllByInsuredIdAdapter;
+export type IFullDatabaseAdapter = ISaveAdapter & IGetAllByInsuredIdAdapter;
