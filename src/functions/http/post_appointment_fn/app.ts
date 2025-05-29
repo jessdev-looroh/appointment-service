@@ -1,9 +1,10 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { Appointment, AppointmentSchema } from './schemas/appointment';
-import * as dynamoDB from './aws/dynamo';
 import { formatErrorResponse } from './utils/errorResponse';
+import { Appointment, AppointmentSchema } from './schemas/appointment';
+import { createAppointmentService } from './container';
 import { StatusCodeEnum } from './enums/statusCode';
-import { publishToNewAppointmentTopic } from './aws/sns';
+
+const appointmentService = createAppointmentService();
 
 export const createAppointmentHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     let apiResponse: APIGatewayProxyResult;
@@ -11,16 +12,17 @@ export const createAppointmentHandler = async (event: APIGatewayProxyEvent): Pro
     try {
         const body = JSON.parse(event.body || '{}');
         const appointment: Appointment = AppointmentSchema.parse(body);
-        
-        const resp = await dynamoDB.createAppointment(appointment);
 
-        if (resp.statusCode == StatusCodeEnum.CREATED) await publishToNewAppointmentTopic(appointment);
+        const resp = await appointmentService.createAppointment(appointment);
+
+        if (resp.statusCode === StatusCodeEnum.CREATED)
+            await appointmentService.publishToNewAppointmentTopic(appointment);
 
         apiResponse = {
             statusCode: resp.statusCode,
             body: JSON.stringify(resp),
         };
-    } catch (err: unknown) {
+    } catch (err) {
         console.error('Error (createAppointmentHandler): ', err);
         const resp = formatErrorResponse(err);
         apiResponse = {

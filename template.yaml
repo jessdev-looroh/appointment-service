@@ -111,12 +111,17 @@ Resources:
             Path: /api/appointment
             Method: post
             RestApiId: !Ref AppointmentApiGateway
+            
     Metadata:
+      # BuildMethod: makeFile
       BuildMethod: esbuild
       BuildProperties:
+        Tsconfig: tsconfig.json
         Minify: true
         Target: "es2020"
         Sourcemap: true
+        External:
+          - shared
         EntryPoints:
           - app.ts
 
@@ -131,6 +136,7 @@ Resources:
           DB_NAME_PE: !Ref DbNamePe
           DB_USER_PE: !Ref DbUserPe
           DB_PASSWORD_PE: !Ref DbPassPe
+          MYSQL_APPOINTMENT_TABLE_NAME: appointments
           SOURCE: lambda.create-appointment-fn
       Events:
         MySQSEvent:
@@ -166,6 +172,7 @@ Resources:
           DB_NAME_CL: !Ref DbNameCl
           DB_USER_CL: !Ref DbUserCl
           DB_PASSWORD_CL: !Ref DbPassCl
+          MYSQL_APPOINTMENT_TABLE_NAME: appointments
           SOURCE: lambda.create-appointment-fn
       Events:
         MySQSEvent:
