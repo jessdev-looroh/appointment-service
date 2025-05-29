@@ -1,6 +1,8 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import * as dynamoDB from './aws/dynamo';
 import { formatErrorResponse } from './utils/errorResponse';
+import { createAppointmentService } from './container';
+
+const appointmentService = createAppointmentService();
 
 export const getAppointmentsByInsuredIdHandler = async (
     event: APIGatewayProxyEvent,
@@ -9,10 +11,10 @@ export const getAppointmentsByInsuredIdHandler = async (
 
     try {
         const id = event.pathParameters?.insuredId;
-        console.log({id});
+        
         if (!id) throw new Error('The insuredId is required');
 
-        const resp = await dynamoDB.listAppointmentsByInsuredId(id);
+        const resp = await appointmentService.getAppointmentsByInsuredId(id);
         apiResponse = {
             statusCode: resp.statusCode,
             body: JSON.stringify(resp),
