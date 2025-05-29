@@ -26,7 +26,6 @@ export const updateAppointmentStatus = async (appointment: Appointment) => {
 
     try {
         const resp = await ddbClient.send(command);
-        const wasCreated = resp.$metadata.httpStatusCode == 200;
     } catch (err) {
         console.error('Error (createAppointment): ', err);
     }

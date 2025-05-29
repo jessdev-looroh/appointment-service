@@ -7,11 +7,9 @@ export const createAppointmentHandler = async (event: SQSEvent): Promise<void> =
     try {
         for (const record of event.Records) {
             const body = JSON.parse(record.body);
-            
+
             const appointment: Appointment = JSON.parse(body.Message);
-            const wasCreated = await appointmentService.createAppointment(appointment);
-            if (wasCreated) await appointmentService.emitAppointmentCreated(appointment);
-            else console.log('[INFO] (createAppointmentHandler): appointment was not created!');
+            await appointmentService.createAppointment(appointment);
         }
     } catch (err) {
         console.error('[ERROR] (createAppointmentHandler): ', err);
