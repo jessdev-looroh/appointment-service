@@ -1,3 +1,3 @@
-export * from './DatabaseAdapter';
-export * from './DynamoDBAdapter';
+export * from '../../interfaces/infrastructure/IDatabaseAdapter';
+export * from './dynamoDBAdapter';
 // export * from './MySQLAdapter';

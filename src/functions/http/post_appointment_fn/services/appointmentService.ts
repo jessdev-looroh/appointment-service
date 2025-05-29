@@ -1,15 +1,19 @@
 import { Appointment } from '../schemas/appointment';
-import { AppointmentRepository } from '../repositories/appointmentRepository';
-import { StatusCodeEnum } from '../enums/statusCode';
-import { StatusTextEnum } from '../enums/statusText';
-import { Response } from '../interfaces/response/response';
-import * as SNS from '../aws/sns';
+import { StatusTextEnum, StatusCodeEnum } from '../enums';
+import { IAppointmentRepository, INotificationPublisherAdapter, Response } from '../interfaces';
 
 export class AppointmentService {
-    constructor(private appointmentRepository: AppointmentRepository) {}
+    constructor(
+        private appointmentRepository: IAppointmentRepository,
+        private notificationPublisher: INotificationPublisherAdapter,
+    ) {}
 
     createAppointment = async (appointment: Appointment) => {
         const wasCreated = await this.appointmentRepository.createAppointment(appointment);
+
+        if (wasCreated) {
+            await this.notificationPublisher.publishNewAppointment(appointment);
+        }
 
         const appointmentResponse: Response = {
             statusCode: wasCreated ? StatusCodeEnum.CREATED : StatusCodeEnum.INTERNAL,
@@ -22,8 +26,4 @@ export class AppointmentService {
         return appointmentResponse;
     };
 
-    publishToNewAppointmentTopic = async (appointment: Appointment) => {
-        await SNS.publishToNewAppointmentTopic(appointment);
-    };
-    
 }

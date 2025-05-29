@@ -1,34 +1,15 @@
 import { DynamoDBClient, PutItemCommand, QueryCommand } from '@aws-sdk/client-dynamodb';
-import { FullDatabaseAdapter } from './DatabaseAdapter';
+import { ISaveAdapter } from '../../interfaces';
 import { AppointmentStatus } from '../../enums/appointmentStatus';
 import { Appointment } from '../../schemas/appointment';
 
-export class DynamoDBAdapter implements FullDatabaseAdapter {
+export class DynamoDBAdapter implements ISaveAdapter {
     private client: DynamoDBClient;
     private tableName: string;
 
     constructor(tableName: string, region: string = 'us-east-2') {
         this.client = new DynamoDBClient({ region });
         this.tableName = tableName;
-    }
-
-    async getAllByInsuredId(insuredId: string): Promise<Appointment[]> {
-        try {
-            const command = new QueryCommand({
-                TableName: this.tableName,
-                KeyConditionExpression: 'PK = :pk',
-                ExpressionAttributeValues: {
-                    ':pk': { S: `INSURED#${insuredId}` },
-                },
-            });
-
-            const result = await this.client.send(command);
-            // return result.Items as T[] || null;
-        } catch (error) {
-            console.error('DynamoDB getAllByInsuredId error:', error);
-            // return null;
-        }
-        return [];
     }
 
     async save(appointment: Appointment): Promise<boolean> {
@@ -50,7 +31,7 @@ export class DynamoDBAdapter implements FullDatabaseAdapter {
             return resp.$metadata.httpStatusCode == 200;
         } catch (err) {
             console.error('Error (createAppointment): ', err);
-            throw err; 
+            throw err;
         }
     }
 }
