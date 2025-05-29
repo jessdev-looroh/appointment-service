@@ -116,15 +116,32 @@ GET api/appointments/{insuredId}
 
 ---
 
-<!-- ## 🧪 Pruebas
+## 🧪 Ejecutar tests de todas las Lambdas
+
+Este proyecto incluye un script para ejecutar automáticamente los tests de todas las funciones Lambda que tengan una carpeta `tests` con archivos de prueba.
+
+### 🔧 Requisitos
+
+* Tener instalado `yarn`.
+* Tener TypeScript y Jest configurado en cada Lambda.
+
+### 🚀 Ejecución
+
+Desde la raíz del proyecto, ejecuta:
 
 ```bash
-npm test
+bash test-all.sh
 ```
 
-> Las pruebas están ubicadas en la carpeta `/tests` y utilizan Jest como framework.
+Este comando:
 
---- -->
+* Busca todas las carpetas que contengan un `package.json`.
+* Verifica si existe un directorio `tests` con archivos `.ts` o `.js`.
+* Ejecuta los tests usando `yarn test`.
+* Muestra mensajes de éxito o advertencia según el estado de los tests.
+
+---
+
 
 ## 📌 Variables de entorno
 

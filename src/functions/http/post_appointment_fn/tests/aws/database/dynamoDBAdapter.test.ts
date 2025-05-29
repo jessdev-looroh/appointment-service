@@ -1,7 +1,6 @@
 import { DynamoDBAdapter } from '../../../aws/database';
 import { mockClient } from 'aws-sdk-client-mock';
-import { DynamoDBClient, QueryCommand, PutItemCommand } from '@aws-sdk/client-dynamodb';
-import { AppointmentStatus } from '../../../enums/appointmentStatus';
+import { DynamoDBClient, PutItemCommand } from '@aws-sdk/client-dynamodb';
 import { Appointment } from '../../../schemas/appointment';
 import { beforeEach, describe, expect, test } from '@jest/globals';
 
