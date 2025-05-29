@@ -46,6 +46,10 @@ Resources:
     Properties:
       Name: !Sub appointment-api-rest-${Stage}
       StageName: !Ref Stage
+      Cors:
+        AllowHeaders: "'*'"
+        AllowMethods: "'*'"
+        AllowOrigin: "'*'"
 
   ##################### FUNCTIONS #######################
 
