@@ -1,5 +1,7 @@
 # 📅 Appointment Service
 
+![Arquitectura del servicio](./docs/architecture.jpg)
+
 Servicio Serverless para la gestión de citas, desarrollado con AWS Lambda y desplegado mediante AWS SAM. Este microservicio permite la creación, consulta y gestión de citas en un entorno escalable y altamente disponible.
 
 ---
@@ -24,12 +26,13 @@ Servicio Serverless para la gestión de citas, desarrollado con AWS Lambda y des
 ```
 appointment-service/
 │
-├── events/                  # Eventos de ejemplo para pruebas locales
+├── docs/                    # Documentación en swagger y diagrama de componentes
 ├── src/
 │   └── functions/           # Lambdas individuales
 │         ├── http/          # Funciones Lambda invocadas mediante solicitudes HTTP (API Gateway)
 │         └── sqs/           # Funciones Lambda desencadenadas por eventos de SQS
 ├── template.yaml            # Definición de recursos SAM
+├── samconfig.{stage}.toml   # Archivo de configuración según {stage} sea dev o prod, aquí se manejan las variables de  │                              entorno también
 └── README.md
 ```
 
