@@ -3,6 +3,7 @@ import { formatErrorResponse } from './utils/errorResponse';
 import { createAppointmentService } from './container';
 
 const appointmentService = createAppointmentService();
+const headers =  JSON.parse(process.env.CORS_HEADERS!);
 
 export const getAppointmentsByInsuredIdHandler = async (
     event: APIGatewayProxyEvent,
@@ -17,6 +18,7 @@ export const getAppointmentsByInsuredIdHandler = async (
         const resp = await appointmentService.getAppointmentsByInsuredId(id);
         apiResponse = {
             statusCode: resp.statusCode,
+            headers,
             body: JSON.stringify(resp),
         };
     } catch (err: unknown) {
@@ -24,6 +26,7 @@ export const getAppointmentsByInsuredIdHandler = async (
         const resp = formatErrorResponse(err);
         apiResponse = {
             statusCode: resp.statusCode,
+            headers,
             body: JSON.stringify(resp),
         };
     }
