@@ -51,7 +51,7 @@ Resources:
         AllowMethods: "'*'"
         AllowOrigin: "'*'"
 
-  ##################### FUNCTIONS #######################
+  #   ##################### FUNCTIONS #######################
 
   GetAppointmentFunction:
     Type: AWS::Serverless::Function
@@ -106,8 +106,7 @@ Resources:
               Action:
                 - sns:Publish
               Resource: !Ref EventNewAppointmentSNS
-        
-          
+
       Events:
         ApiGateway:
           Type: Api
@@ -115,83 +114,48 @@ Resources:
             Path: /api/appointment
             Method: post
             RestApiId: !Ref AppointmentApiGateway
-            
+
     Metadata:
-      # BuildMethod: makeFile
       BuildMethod: esbuild
       BuildProperties:
-        Tsconfig: tsconfig.json
         Minify: true
         Target: "es2020"
         Sourcemap: true
-        External:
-          - shared
         EntryPoints:
           - app.ts
 
-  CreateAppointmentPeruFunction:
+  CreateAppointmentFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/functions/sqs/create_appointment_pe_fn
+      CodeUri: src/functions/sqs/create_appointment_fn
       Handler: app.createAppointmentHandler
       Environment:
         Variables:
+          SOURCE: lambda.create-appointment-fn
           DB_HOST_PE: !Ref DbHostPe
           DB_NAME_PE: !Ref DbNamePe
           DB_USER_PE: !Ref DbUserPe
           DB_PASSWORD_PE: !Ref DbPassPe
-          MYSQL_APPOINTMENT_TABLE_NAME: appointments
-          SOURCE: lambda.create-appointment-fn
-      Events:
-        MySQSEvent:
-          Type: SQS
-          Properties:
-            Queue: !GetAtt NewAppointmentPeruSQS.Arn
-            BatchSize: 10
-      Policies:
-        - Statement:
-          - Effect: Allow
-            Action:
-              - events:PutEvents
-            Resource: "*"
-        - SQSPollerPolicy:
-            QueueName: !Ref NewAppointmentPeruSQS
-    Metadata:
-      BuildMethod: esbuild
-      BuildProperties:
-        Minify: true
-        Target: "es2020"
-        Sourcemap: true
-        EntryPoints:
-          - app.ts
-
-  CreateAppointmentChileFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: src/functions/sqs/create_appointment_cl_fn
-      Handler: app.createAppointmentHandler
-      Environment:
-        Variables:
+          MYSQL_APPOINTMENT_TABLE_NAME_PE: appointments
           DB_HOST_CL: !Ref DbHostCl
           DB_NAME_CL: !Ref DbNameCl
           DB_USER_CL: !Ref DbUserCl
           DB_PASSWORD_CL: !Ref DbPassCl
-          MYSQL_APPOINTMENT_TABLE_NAME: appointments
-          SOURCE: lambda.create-appointment-fn
+          MYSQL_APPOINTMENT_TABLE_NAME_CL: appointments
       Events:
         MySQSEvent:
           Type: SQS
           Properties:
-            Queue: !GetAtt NewAppointmentChileSQS.Arn
+            Queue: !GetAtt NewAppointmentByCountrySQS.Arn
             BatchSize: 10
       Policies:
         - Statement:
-          - Effect: Allow
-            Action:
-              - events:PutEvents
-            Resource: "*"
+            - Effect: Allow
+              Action:
+                - events:PutEvents
+              Resource: "*"
         - SQSPollerPolicy:
-            QueueName: !Ref NewAppointmentChileSQS
+            QueueName: !Ref NewAppointmentByCountrySQS
     Metadata:
       BuildMethod: esbuild
       BuildProperties:
@@ -217,13 +181,13 @@ Resources:
             BatchSize: 10
       Policies:
         - SQSPollerPolicy:
-            QueueName: !Ref NewAppointmentChileSQS
+            QueueName: !Ref UpdateAppointmentStatusSQS
         - Statement:
-          - Sid: AllowUpdateAppointment
-            Effect: Allow
-            Action:
-              - dynamodb:UpdateItem
-            Resource: !GetAtt AppointmentsTable.Arn
+            - Sid: AllowUpdateAppointment
+              Effect: Allow
+              Action:
+                - dynamodb:UpdateItem
+              Resource: !GetAtt AppointmentsTable.Arn
     Metadata:
       BuildMethod: esbuild
       BuildProperties:
@@ -233,14 +197,10 @@ Resources:
         EntryPoints:
           - app.ts
   ##################### DYNAMO TABLE #######################
-  # No necesitas modificar el esquema de atributos en el template.yaml para campos como appointmentStatus
-  # si no son parte de las claves. DynamoDB es esquemaless en los atributos no indexados.
-  # appointmentStatus: SCHEDULED | COMPLETED
-
   AppointmentsTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: !Sub "appointments_table_${Stage}"
+      TableName: !Sub "appointments-table-${Stage}"
       BillingMode: PROVISIONED
       ProvisionedThroughput:
         ReadCapacityUnits: 1
@@ -277,32 +237,20 @@ Resources:
     Type: AWS::SNS::Topic
     Properties:
       TopicName: !Sub "event-new-appointment-${Stage}"
-      # Subscription:
-      #   - Protocol: sqs
-      #     Endpoint: !GetAtt NewAppointmentPeruSQS.Arn
-      #   - Protocol: sqs
-      #     Endpoint: !GetAtt NewAppointmentChileSQS.Arn
 
   ##################### SQS #######################
-  
-  NewAppointmentPeruSQS:
-    Type: AWS::SQS::Queue
-    Properties:
-      QueueName: !Sub "new-appointment-pe-${Stage}"
-      VisibilityTimeout: 40
 
-  NewAppointmentChileSQS:
+  NewAppointmentByCountrySQS:
     Type: AWS::SQS::Queue
     Properties:
-      QueueName: !Sub "new-appointment-cl-${Stage}"
+      QueueName: !Sub "new-appointment-by-country-${Stage}"
       VisibilityTimeout: 40
 
   UpdateAppointmentStatusSQS:
-      Type: AWS::SQS::Queue
-      Properties:
-        QueueName: !Sub "updated-appointment-status-${Stage}"
-        VisibilityTimeout: 40
-    
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub "updated-appointment-status-${Stage}"
+      VisibilityTimeout: 40
 
   ##################### POLICY #######################
   NewAppointmentSQSPolicy:
@@ -311,27 +259,17 @@ Resources:
       PolicyDocument:
         Version: "2012-10-17"
         Statement:
-          - Sid: new-appointment-peru-policy
+          - Sid: new-appointment-by-country-policy
             Effect: Allow
             Principal:
               Service: "sns.amazonaws.com"
-            Resource: !GetAtt NewAppointmentPeruSQS.Arn
-            Action: SQS:SendMessage
-            Condition:
-              ArnEquals:
-                aws:SourceArn: !Ref EventNewAppointmentSNS
-          - Sid: new-appointment-chile-policy
-            Effect: Allow
-            Principal:
-              Service: "sns.amazonaws.com"
-            Resource: !GetAtt NewAppointmentChileSQS.Arn
+            Resource: !GetAtt NewAppointmentByCountrySQS.Arn
             Action: SQS:SendMessage
             Condition:
               ArnEquals:
                 aws:SourceArn: !Ref EventNewAppointmentSNS
       Queues:
-        - !Ref NewAppointmentPeruSQS
-        - !Ref NewAppointmentChileSQS
+        - !Ref NewAppointmentByCountrySQS
 
   UpdateAppointmentStatusSQSPolicy:
     Type: AWS::SQS::QueuePolicy
@@ -353,24 +291,12 @@ Resources:
     Type: AWS::SNS::Subscription
     Properties:
       Protocol: sqs
-      Endpoint: !GetAtt NewAppointmentPeruSQS.Arn
+      Endpoint: !GetAtt NewAppointmentByCountrySQS.Arn
       Region: !Sub "${AWS::Region}"
       TopicArn: !Ref EventNewAppointmentSNS
-      FilterPolicy:
-        countryISO: ["PE"]
-
-  NewAppointmentChileSQSSubscription:
-    Type: AWS::SNS::Subscription
-    Properties:
-      Protocol: sqs
-      Endpoint: !GetAtt NewAppointmentChileSQS.Arn
-      Region: !Sub "${AWS::Region}"
-      TopicArn: !Ref EventNewAppointmentSNS
-      FilterPolicy:
-        countryISO: ["CL"]
 
   ##################### EVENTBRIDGE #######################
-  
+
   UpdateAppointmentEventRule:
     Type: AWS::Events::Rule
     Properties:
@@ -383,7 +309,6 @@ Resources:
       Targets:
         - Arn: !GetAtt UpdateAppointmentStatusSQS.Arn
           Id: "UpdateAppointmentStatusSQS"
-
 
 Outputs:
   AppointmentApiGateway:

@@ -1,0 +1,30 @@
+{
+  "version": "2.0",
+  "routeKey": "POST /appointments",
+  "rawPath": "/api/appointments",
+  "rawQueryString": "",
+  "headers": {
+    "content-type": "application/json",
+    "x-amzn-trace-id": "Root=1-5f7c3c2d-0a1b2c3d4e5f6g7h8i9j0k"
+  },
+  "requestContext": {
+    "accountId": "123456789012",
+    "apiId": "api-id",
+    "domainName": "id.execute-api.us-east-1.amazonaws.com",
+    "domainPrefix": "id",
+    "http": {
+      "method": "POST",
+      "path": "/appointments",
+      "protocol": "HTTP/1.1",
+      "sourceIp": "192.0.2.1",
+      "userAgent": "curl/7.64.1"
+    },
+    "requestId": "id",
+    "routeKey": "POST /api/appointments",
+    "stage": "$default",
+    "time": "12/Mar/2024:19:03:58 +0000",
+    "timeEpoch": 1710871438000
+  },
+  "body": "{\"insuredId\":\"00001\",\"scheduleId\":1,\"countryISO\":\"PE\"}",
+  "isBase64Encoded": false
+} 

@@ -1,9 +1,9 @@
-import { FullDatabaseAdapter } from '../aws/database';
-
+import { Appointment, GetAllById, Logger } from 'shared';
 export class AppointmentRepository {
-    constructor(private dbAdapter: FullDatabaseAdapter) {}
+    constructor(private database: GetAllById, private logger: Logger) {}
 
     async getAppointmentsByInsuredId(insuredId: string) {
-        return this.dbAdapter.getAllByInsuredId(insuredId);
+        this.logger.info('AppointmentRepository', `Query sent to database database`);
+        return this.database.getAllById<Appointment>('PK', `INSURED#${insuredId}`, ['PK', 'SK']);
     }
 }

@@ -1,18 +1,18 @@
 import { SQSEvent } from 'aws-lambda';
-import { Appointment } from './interfaces/appointment';
-import { AppointmentStatus } from './enums/appointmentStatus';
 import { createAppointmentService } from './container';
+import { Appointment, Logger } from 'shared';
 
 export const updateAppointmentHandler = async (event: SQSEvent): Promise<void> => {
+    const logger = new Logger();
     try {
         for (const record of event.Records) {
             const body = JSON.parse(record.body);
-            const appointmentService = createAppointmentService();
+            logger.info('handler', `Event received with body: ${JSON.stringify(body)}`);
+            const appointmentService = createAppointmentService(logger);
             const appointment: Appointment = body.detail;
-
-            await appointmentService.updateAppointmentStatus(appointment);
+            await appointmentService.update(appointment);
         }
     } catch (err) {
-        console.error('[ERROR] (updateAppointmentHandler): ', err);
+        logger.error('handler', `Error updating appointment: ${err}`);
     }
 };
