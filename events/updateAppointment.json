@@ -1,0 +1,20 @@
+{
+  "Records": [
+    {
+      "messageId": "1",
+      "receiptHandle": "SomeReceiptHandle",
+      "body": "{\"version\":\"0\",\"id\":\"abcd-1234\",\"detail-type\":\"Appointment Updated\",\"source\":\"custom.appointment\",\"account\":\"123456789012\",\"time\":\"2024-06-01T12:00:00Z\",\"region\":\"us-east-1\",\"resources\":[],\"detail\":{\"appointmentId\":\"appt-001\",\"insuredId\":\"12345\",\"scheduleId\":1001,\"countryISO\":\"PE\",\"status\":\"confirmed\"}}",
+      "attributes": {
+        "ApproximateReceiveCount": "1",
+        "SentTimestamp": "1622547800000",
+        "SenderId": "SomeSenderId",
+        "ApproximateFirstReceiveTimestamp": "1622547800001"
+      },
+      "messageAttributes": {},
+      "md5OfBody": "SomeMD5Hash",
+      "eventSource": "aws:sqs",
+      "eventSourceARN": "arn:aws:sqs:us-east-1:123456789012:MyQueue",
+      "awsRegion": "us-east-1"
+    }
+  ]
+} 

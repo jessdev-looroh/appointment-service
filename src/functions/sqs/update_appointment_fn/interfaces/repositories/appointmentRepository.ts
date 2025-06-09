@@ -1,5 +1,5 @@
-import { Appointment } from "../../interfaces/appointment";
+import { Appointment } from 'shared';
 
-export interface IAppointmentRepository {
-    updateAppointment(appointment: Appointment): Promise<void>;
+export interface AppointmentRepository {
+    update(appointment: Appointment): Promise<boolean>;
 }

@@ -1,27 +1,40 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { formatErrorResponse } from './utils/errorResponse';
 import { Appointment, AppointmentSchema } from './schemas/appointment';
 import { createAppointmentService } from './container';
+import { formatErrorResponse, Logger } from 'shared';
 
+const headers = JSON.parse(process.env.CORS_HEADERS!);
+
+/**
+ * Handler for the create appointment endpoint
+ * @param {APIGatewayProxyEvent} event - The event object
+ * @returns {Promise<APIGatewayProxyResult>} The API response
+ */
 export const createAppointmentHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+    const logger = new Logger();
+    const appointmentService = createAppointmentService(logger);
+
     let apiResponse: APIGatewayProxyResult;
 
     try {
         const body = JSON.parse(event.body || '{}');
         const appointment: Appointment = AppointmentSchema.parse(body);
 
-        const appointmentService = createAppointmentService();
+        logger.info('Handler', `Request accepted with body: ${JSON.stringify(body)}`);
         const resp = await appointmentService.createAppointment(appointment);
 
         apiResponse = {
             statusCode: resp.statusCode,
+            headers,
             body: JSON.stringify(resp),
         };
-    } catch (err) {
-        console.error('Error (createAppointmentHandler): ', err);
+    } catch (err: any) {
+        logger.error('Handler', err?.message ?? '', err);
+
         const resp = formatErrorResponse(err);
         apiResponse = {
             statusCode: resp.statusCode,
+            headers,
             body: JSON.stringify(resp),
         };
     }

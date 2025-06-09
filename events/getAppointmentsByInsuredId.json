@@ -1,0 +1,46 @@
+{
+  "body": null,
+  "headers": {
+    "Content-Type": "application/json"
+  },
+  "httpMethod": "GET",
+  "isBase64Encoded": false,
+  "path": "/api/appointments/00001",
+  "pathParameters": {
+    "insuredId": "00001"
+  },
+  "queryStringParameters": null,
+  "multiValueQueryStringParameters": null,
+  "stageVariables": null,
+  "resource": "/api/appointments/{insuredId}",
+  "requestContext": {
+    "accountId": "123456789012",
+    "apiId": "test-api-id",
+    "authorizer": null,
+    "protocol": "HTTP/1.1",
+    "httpMethod": "GET",
+    "identity": {
+      "accessKey": null,
+      "accountId": null,
+      "apiKey": null,
+      "apiKeyId": null,
+      "caller": null,
+      "clientCert": null,
+      "cognitoAuthenticationProvider": null,
+      "cognitoAuthenticationType": null,
+      "cognitoIdentityId": null,
+      "cognitoIdentityPoolId": null,
+      "principalOrgId": null,
+      "sourceIp": "127.0.0.1",
+      "user": null,
+      "userAgent": "PostmanRuntime/7.28.4",
+      "userArn": null
+    },
+    "path": "/api/appointments/00001",
+    "requestId": "mock-request-id",
+    "requestTimeEpoch": 1717180800000,
+    "resourceId": "mock-resource-id",
+    "resourcePath": "/api/appointments/{insuredId}",
+    "stage": "dev"
+  }
+}

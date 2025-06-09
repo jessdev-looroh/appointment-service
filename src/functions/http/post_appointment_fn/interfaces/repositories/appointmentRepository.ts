@@ -1,5 +1,5 @@
 import { Appointment } from "../../schemas/appointment";
 
-export interface IAppointmentRepository {
-    createAppointment(appointment: Appointment): Promise<boolean>;
+export interface AppointmentRepository {
+    save(appointment: Appointment): Promise<boolean>;
 }
