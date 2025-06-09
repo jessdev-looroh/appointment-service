@@ -119,7 +119,7 @@ Este proyecto implementa los patrones de diseño **Factory** y **Strategy** para
 ### ✨ Beneficios
 
 - **Extensibilidad**: Agregar soporte para un nuevo país requiere únicamente implementar una nueva clase de estrategia y registrarla en la configuración.
-- **Reutilización**: Las dependencias comunes como el repositorio, logger y publicador de eventos son inyectadas por la factoría.
+- **Reutilización**: Las dependencias comunes como el repositorio, logger y publicador de eventos son inyectadas por la fabrica.
 - **Bajo acoplamiento**: La lógica de negocio varía por país sin modificar el flujo general de creación de citas.
 
 ### 🧩 Ejemplo de uso
@@ -209,7 +209,8 @@ GET api/appointments/{insuredId}
 
 ## 🧪 Ejecutar tests de todas las Lambdas
 
-Este proyecto incluye un script para ejecutar automáticamente los tests de todas las funciones Lambda que tengan una carpeta `tests` con archivos de prueba.
+Este proyecto incluye un script para ejecutar automáticamente los tests del paquete local `shared` y de todas las funciones Lambda que tengan una carpeta `tests` con archivos de prueba.
+Por ahora se ha hecho la implementación de los test unitarios únicamente en el paquete `shared`
 
 ### 🔧 Requisitos
 
