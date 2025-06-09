@@ -5,6 +5,11 @@ import { formatErrorResponse, Logger } from 'shared';
 
 const headers = JSON.parse(process.env.CORS_HEADERS!);
 
+/**
+ * Handler for the create appointment endpoint
+ * @param {APIGatewayProxyEvent} event - The event object
+ * @returns {Promise<APIGatewayProxyResult>} The API response
+ */
 export const createAppointmentHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     const logger = new Logger();
     const appointmentService = createAppointmentService(logger);
@@ -24,7 +29,7 @@ export const createAppointmentHandler = async (event: APIGatewayProxyEvent): Pro
             body: JSON.stringify(resp),
         };
     } catch (err: any) {
-        logger.error('Handler', err?.message ?? '' , err);
+        logger.error('Handler', err?.message ?? '', err);
 
         const resp = formatErrorResponse(err);
         apiResponse = {

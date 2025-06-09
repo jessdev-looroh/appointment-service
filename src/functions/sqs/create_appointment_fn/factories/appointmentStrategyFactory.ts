@@ -4,7 +4,17 @@ import { AppointmentRepositoryImpl } from '../repositories/appointmentRepository
 import { MySQLAdapter, Logger, EventBridgePublisher } from 'shared';
 const strategyCache: Map<string, CountryAppointmentStrategy> = new Map();
 
+/**
+ * Class that provides a factory for appointment strategies
+ * @param {string} countryISO - The country ISO
+ * @returns {CountryAppointmentStrategy} The appointment strategy
+ */
 export class AppointmentStrategyFactory {
+    /**
+     * Gets an appointment strategy for a given country
+     * @param {string} countryISO - The country ISO
+     * @returns {CountryAppointmentStrategy} The appointment strategy
+     */
     static getStrategy(countryISO: string): CountryAppointmentStrategy {
         const country = countryISO.toUpperCase();
 

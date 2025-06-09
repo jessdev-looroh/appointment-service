@@ -1,7 +1,7 @@
 import { DynamoDBAdapter } from '../../../aws/database/dynamoDBAdapter';
 import * as DynamoDBClientModule from '@aws-sdk/client-dynamodb';
 import { unmarshall } from '@aws-sdk/util-dynamodb';
-import { newAppointmentMock } from '../../mocks/newAppointment.mock';
+import { newAppointmentMock, appointmentMock } from '../../mocks';
 
 jest.mock('@aws-sdk/client-dynamodb');
 jest.mock('@aws-sdk/util-dynamodb');
@@ -69,44 +69,32 @@ describe('Testing DynamoDBAdapter class', () => {
         });
     });
 
-    xdescribe('getAllById', () => {
-        /**
-         * Should return items when found
-         */
+    describe('getAllById', () => {
         it('should return items when found', async () => {
-            const items = [{ id: { S: '1' }, name: { S: 'Test' } }];
+            const items = [appointmentMock];
             mockSend.mockResolvedValue({ Count: 1, Items: items });
-            mockUnmarshall.mockReturnValue({ id: '1', name: 'Test' });
-            const result = await adapter.getAllById('id', '1');
-            expect(result).toEqual([{ id: '1', name: 'Test' }]);
+            mockUnmarshall.mockReturnValue(appointmentMock);
+            const result = await adapter.getAllById('PK', 'INSURED#00001');
+            expect(result).toEqual([appointmentMock]);
         });
 
-        /**
-         * Should delete specified fields from items
-         */
         it('should delete specified fields from items', async () => {
-            const items = [{ id: { S: '1' }, name: { S: 'Test' }, secret: { S: 'hidden' } }];
+            const items = [appointmentMock];
             mockSend.mockResolvedValue({ Count: 1, Items: items });
-            mockUnmarshall.mockReturnValue({ id: '1', name: 'Test', secret: 'hidden' });
-            const result = await adapter.getAllById('id', '1', ['secret']);
-            expect(result).toEqual([{ id: '1', name: 'Test' }]);
+            mockUnmarshall.mockReturnValue(appointmentMock);
+            const result = await adapter.getAllById('PK', 'INSURED#00001', ['PK', 'SK']);
+            expect(result).toEqual([appointmentMock]);
         });
 
-        /**
-         * Should return empty array if no items found
-         */
         it('should return empty array if no items found', async () => {
             mockSend.mockResolvedValue({ Count: 0 });
-            const result = await adapter.getAllById('id', '1');
+            const result = await adapter.getAllById('PK', 'INSURED#00001');
             expect(result).toEqual([]);
         });
 
-        /**
-         * Should throw error on failure
-         */
         it('should throw error on failure', async () => {
             mockSend.mockRejectedValue(new Error('Dynamo error'));
-            await expect(adapter.getAllById('id', '1')).rejects.toThrow('Dynamo error');
+            await expect(adapter.getAllById('PK', 'INSURED#00001')).rejects.toThrow('Dynamo error');
         });
     });
 

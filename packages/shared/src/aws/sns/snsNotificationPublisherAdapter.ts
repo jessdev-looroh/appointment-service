@@ -2,6 +2,10 @@ import { Appointment, NotificationPublisherAdapter } from '../../interfaces';
 import { Logger } from '../../utils';
 import { SNSClient, PublishCommand } from '@aws-sdk/client-sns';
 
+/**
+ * Class that provides an adapter pattern implementation for SNS operations
+ * @implements {NotificationPublisherAdapter}
+ */
 export class NotificationPublisherAdapterImpl implements NotificationPublisherAdapter {
     private client: SNSClient;
     private topicArn: string;
@@ -13,6 +17,11 @@ export class NotificationPublisherAdapterImpl implements NotificationPublisherAd
         this.logger = logger;
     }
 
+    /**
+     * Publishes a new appointment notification
+     * @param {Appointment} appointment - The appointment to publish
+     * @returns {Promise<void>}
+     */
     async publishNewAppointment(appointment: Appointment): Promise<void> {
         const command = new PublishCommand({
             TopicArn: this.topicArn,

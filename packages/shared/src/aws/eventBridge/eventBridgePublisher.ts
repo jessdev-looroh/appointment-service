@@ -3,6 +3,10 @@ import { EventBridgeClient, PutEventsCommand, PutEventsCommandInput } from '@aws
 import { Logger } from '../../utils';
 import { Appointment, EventPublisher } from '../../interfaces';
 
+/**
+ * Class that provides an adapter pattern implementation for EventBridge operations
+ * @implements {EventPublisher}
+ */
 export class EventBridgePublisher implements EventPublisher {
     private client: EventBridgeClient;
     private eventBusName: string;
@@ -16,6 +20,11 @@ export class EventBridgePublisher implements EventPublisher {
         this.logger = logger;
     }
 
+    /**
+     * Publishes an appointment created event to EventBridge
+     * @param {Appointment} appointment - The appointment to publish
+     * @returns {Promise<void>}
+     */
     async publishAppointmentCreated(appointment: Appointment): Promise<void> {
         const entry: PutEventsCommandInput = {
             Entries: [

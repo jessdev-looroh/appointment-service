@@ -7,6 +7,9 @@ export default {
     transform: {
         '^.+\\.ts?$': 'ts-jest',
     },
+    preset: 'ts-jest',
+    testEnvironment: 'node',
+    transformIgnorePatterns: ['/node_modules/(?!chalk).+\\.js$'],
     clearMocks: true,
     collectCoverage: true,
     coverageDirectory: 'coverage',

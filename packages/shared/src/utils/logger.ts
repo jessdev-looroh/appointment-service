@@ -1,5 +1,8 @@
 import chalk from 'chalk';
 
+/**
+ * Logger class that provides a simple logging mechanism with colors
+ */
 export class Logger {
     constructor() {}
 

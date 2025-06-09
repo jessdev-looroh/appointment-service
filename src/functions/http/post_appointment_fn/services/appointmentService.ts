@@ -3,6 +3,12 @@ import { Appointment } from '../schemas/appointment';
 import { AppointmentRepository } from '../interfaces';
 import { NotificationPublisherAdapter, Logger, Response, StatusCodeEnum, StatusTextEnum } from 'shared';
 
+/**
+ * Class that provides a service for appointment operations
+ * @param {AppointmentRepository} appointmentRepository - The appointment repository
+ * @param {NotificationPublisherAdapter} notificationPublisher - The notification publisher
+ * @param {Logger} logger - The logger instance
+ */
 export class AppointmentService {
     constructor(
         private appointmentRepository: AppointmentRepository,
@@ -10,6 +16,11 @@ export class AppointmentService {
         private logger: Logger,
     ) {}
 
+    /**
+     * Creates an appointment
+     * @param {Appointment} appointment - The appointment to create
+     * @returns {Promise<Response>} The response
+     */
     createAppointment = async (appointment: Appointment) => {
         this.logger.info('AppointmentService', `Creating appointment`);
 

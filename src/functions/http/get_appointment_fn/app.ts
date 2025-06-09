@@ -4,12 +4,17 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 
 const headers = JSON.parse(process.env.CORS_HEADERS!);
 
+/**
+ * Handler for the get appointments by insured id endpoint
+ * @param {APIGatewayProxyEvent} event - The event object
+ * @returns {Promise<APIGatewayProxyResult>} The API response
+ */
 export const getAppointmentsByInsuredIdHandler = async (
     event: APIGatewayProxyEvent,
 ): Promise<APIGatewayProxyResult> => {
     const logger = new Logger();
     const appointmentService = createAppointmentService(logger);
-    
+
     let apiResponse: APIGatewayProxyResult;
 
     try {
@@ -17,7 +22,7 @@ export const getAppointmentsByInsuredIdHandler = async (
 
         if (!id) throw new Error('The insuredId is required');
 
-        logger.info('Handler', ` Request accepted with parameter id = ${id}` )
+        logger.info('Handler', ` Request accepted with parameter id = ${id}`);
         const resp = await appointmentService.getAppointmentsByInsuredId(id);
         apiResponse = {
             statusCode: resp.statusCode,
@@ -25,7 +30,7 @@ export const getAppointmentsByInsuredIdHandler = async (
             body: JSON.stringify(resp),
         };
     } catch (err: any) {
-        logger.error('Handler', err?.message ?? '' , err);
+        logger.error('Handler', err?.message ?? '', err);
 
         const resp = formatErrorResponse(err);
 

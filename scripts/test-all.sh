@@ -2,6 +2,24 @@
 
 echo "🧪 Iniciando tests en todas las Lambdas..."
 
+# Ejecutar tests en el paquete shared primero
+if [ -d "./packages/shared" ]; then
+    echo "-----------------------------------------"
+    echo "📦 Ejecutando tests en paquete shared"
+    if [ -f "./packages/shared/yarn.lock" ]; then
+        (cd ./packages/shared && yarn test)
+    else
+        (cd ./packages/shared && npm test)
+    fi
+    exit_code=$?
+    if [ $exit_code -ne 0 ]; then
+        echo "❌ Fallaron los tests en el paquete shared. Abortando pruebas."
+        exit 1
+    else
+        echo "✅ Tests ejecutados exitosamente en: shared"
+    fi
+fi
+
 # Buscar package.json en funciones, ignorando node_modules
 find ./src/functions -type f -name "package.json" \
     -not -path "*/node_modules/*" | while read package_json; do
