@@ -1,0 +1,356 @@
+{
+	"info": {
+		"_postman_id": "0ba8ae63-b972-4f40-8e45-012da75feb64",
+		"name": "Appointments",
+		"description": "# 🚀 Get started here\n\nThis template guides you through CRUD operations (GET, POST, PUT, DELETE), variables, and tests.\n\n## 🔖 **How to use this template**\n\n#### **Step 1: Send requests**\n\nRESTful APIs allow you to perform CRUD operations using the POST, GET, PUT, and DELETE HTTP methods.\n\nThis collection contains each of these [request](https://learning.postman.com/docs/sending-requests/requests/) types. Open each request and click \"Send\" to see what happens.\n\n#### **Step 2: View responses**\n\nObserve the response tab for status code (200 OK), response time, and size.\n\n#### **Step 3: Send new Body data**\n\nUpdate or add new data in \"Body\" in the POST request. Typically, Body data is also used in PUT request.\n\n```\n{\n    \"name\": \"Add your name in the body\"\n}\n\n ```\n\n#### **Step 4: Update the variable**\n\nVariables enable you to store and reuse values in Postman. We have created a [variable](https://learning.postman.com/docs/sending-requests/variables/) called `base_url` with the sample request [https://postman-api-learner.glitch.me](https://postman-api-learner.glitch.me). Replace it with your API endpoint to customize this collection.\n\n#### **Step 5: Add tests in the \"Scripts\" tab**\n\nAdding tests to your requests can help you confirm that your API is working as expected. You can write test scripts in JavaScript and view the output in the \"Test Results\" tab.\n\n<img src=\"https://content.pstmn.io/fa30ea0a-373d-4545-a668-e7b283cca343/aW1hZ2UucG5n\" alt=\"\" height=\"1530\" width=\"2162\">\n\n## 💪 Pro tips\n\n- Use folders to group related requests and organize the collection.\n    \n- Add more [scripts](https://learning.postman.com/docs/writing-scripts/intro-to-scripts/) to verify if the API works as expected and execute workflows.\n    \n\n## 💡Related templates\n\n[API testing basics](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=e9a37a28-055b-49cd-8c7e-97494a21eb54&sourceTemplateId=ddb19591-3097-41cf-82af-c84273e56719)  \n[API documentation](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=e9c28f47-1253-44af-a2f3-20dce4da1f18&sourceTemplateId=ddb19591-3097-41cf-82af-c84273e56719)  \n[Authorization methods](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=31a9a6ed-4cdf-4ced-984c-d12c9aec1c27&sourceTemplateId=ddb19591-3097-41cf-82af-c84273e56719)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "11793316",
+		"_collection_link": "https://gold-flare-831159.postman.co/workspace/Looroh~12d33388-0b58-4bac-bd48-a6fe31336755/collection/11793316-0ba8ae63-b972-4f40-8e45-012da75feb64?action=share&source=collection_link&creator=11793316"
+	},
+	"item": [
+		{
+			"name": "List appointments by insuredId",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{api_gw}}/api/appointment/:insuredId",
+					"host": [
+						"{{api_gw}}"
+					],
+					"path": [
+						"api",
+						"appointment",
+						":insuredId"
+					],
+					"variable": [
+						{
+							"key": "insuredId",
+							"value": "00002"
+						}
+					]
+				},
+				"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+			},
+			"response": [
+				{
+					"name": "Successful List",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_gw}}/api/appointment/:insuredId",
+							"host": [
+								"{{api_gw}}"
+							],
+							"path": [
+								"api",
+								"appointment",
+								":insuredId"
+							],
+							"variable": [
+								{
+									"key": "insuredId",
+									"value": "00002"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "398"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 28 May 2025 19:28:30 GMT"
+						},
+						{
+							"key": "X-Amzn-Trace-Id",
+							"value": "Root=1-683763dd-0b59a28f194b63b650ef3575;Parent=375992bbd1a5eb93;Sampled=0;Lineage=1:ace6f41f:0"
+						},
+						{
+							"key": "x-amzn-RequestId",
+							"value": "f94dda6c-b1dd-41ed-8b6c-23ae2408f16e"
+						},
+						{
+							"key": "x-amz-apigw-id",
+							"value": "LSyKmEMPCYcEN_g="
+						},
+						{
+							"key": "X-Cache",
+							"value": "Miss from cloudfront"
+						},
+						{
+							"key": "Via",
+							"value": "1.1 3de0ed29a487a6f92da6f95631474aee.cloudfront.net (CloudFront)"
+						},
+						{
+							"key": "X-Amz-Cf-Pop",
+							"value": "MXP53-P2"
+						},
+						{
+							"key": "X-Amz-Cf-Id",
+							"value": "xPT1zOs7LQqRqwlti6Z0iKI7rdf7lwx9ACAwLX34YK5PJ4a1P_wyWA=="
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"statusCode\": 200,\n    \"statusText\": \"OK\",\n    \"data\": [\n        {\n            \"appointmentStatus\": \"pending\",\n            \"insuredId\": \"00002\",\n            \"scheduleId\": 1,\n            \"countryISO\": \"PE\"\n        },\n        {\n            \"appointmentStatus\": \"pending\",\n            \"insuredId\": \"00002\",\n            \"scheduleId\": 2,\n            \"countryISO\": \"PE\"\n        },\n        {\n            \"appointmentStatus\": \"pending\",\n            \"insuredId\": \"00002\",\n            \"scheduleId\": 3,\n            \"countryISO\": \"PE\"\n        },\n        {\n            \"appointmentStatus\": \"completed\",\n            \"insuredId\": \"00002\",\n            \"scheduleId\": 4,\n            \"countryISO\": \"PE\"\n        }\n    ],\n    \"error\": {}\n}"
+				}
+			]
+		},
+		{
+			"name": "Register appointment",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"insuredId\": \"00002\",\n    \"scheduleId\": 10,\n    \"countryISO\": \"PE\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{api_gw}}/api/appointment",
+					"host": [
+						"{{api_gw}}"
+					],
+					"path": [
+						"api",
+						"appointment"
+					]
+				},
+				"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+			},
+			"response": [
+				{
+					"name": "Fail Register",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"insuredId\": \"00002\",\n    \"scheduleId\": 2,\n    \"countryISO\": \"PE\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api_gw}}/api/appointment",
+							"host": [
+								"{{api_gw}}"
+							],
+							"path": [
+								"api",
+								"appointment"
+							]
+						}
+					},
+					"status": "Conflict",
+					"code": 409,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "1112"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 28 May 2025 19:18:24 GMT"
+						},
+						{
+							"key": "X-Amzn-Trace-Id",
+							"value": "Root=1-6837617a-1396c179331f49ea25d63962;Parent=58213a648072fc5b;Sampled=0;Lineage=1:58979174:0"
+						},
+						{
+							"key": "x-amzn-RequestId",
+							"value": "5b332062-7b35-486a-848d-825dcaace358"
+						},
+						{
+							"key": "x-amz-apigw-id",
+							"value": "LSwrPEd0iYcEl6Q="
+						},
+						{
+							"key": "X-Cache",
+							"value": "Error from cloudfront"
+						},
+						{
+							"key": "Via",
+							"value": "1.1 e71240875fc0fe6791ea667677a66ce4.cloudfront.net (CloudFront)"
+						},
+						{
+							"key": "X-Amz-Cf-Pop",
+							"value": "GIG51-P1"
+						},
+						{
+							"key": "X-Amz-Cf-Id",
+							"value": "EDgAtH3gjZJTwwHM7R7w6RwXwSLCN4hZXVFyBkDp3QbaRGLzDMzyhg=="
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"statusCode\": 409,\n    \"statusText\": \"CONFLICT\",\n    \"data\": [],\n    \"error\": {\n        \"message\": \"Appointment already exists\",\n        \"stack\": \"ConditionalCheckFailedException: The conditional request failed\\n    at de_ConditionalCheckFailedExceptionRes (/AppData/Local/Temp/tmplm4jt1zl/node_modules/@aws-sdk/client-dynamodb/dist-cjs/index.js:2325:21)\\n    at de_CommandError (/AppData/Local/Temp/tmplm4jt1zl/node_modules/@aws-sdk/client-dynamodb/dist-cjs/index.js:2237:19)\\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\\n    at <anonymous> (/AppData/Local/Temp/tmplm4jt1zl/node_modules/@smithy/middleware-serde/dist-cjs/index.js:36:20)\\n    at <anonymous> (/AppData/Local/Temp/tmplm4jt1zl/node_modules/@smithy/core/dist-cjs/index.js:193:18)\\n    at <anonymous> (/AppData/Local/Temp/tmplm4jt1zl/node_modules/@smithy/middleware-retry/dist-cjs/index.js:320:38)\\n    at <anonymous> (/AppData/Local/Temp/tmplm4jt1zl/node_modules/@aws-sdk/middleware-logger/dist-cjs/index.js:33:22)\\n    at bk (/AppData/Local/Temp/tmplm4jt1zl/aws/dynamo.ts:34:22)\\n    at Runtime.Lue (/AppData/Local/Temp/tmplm4jt1zl/app.ts:15:22)\"\n    }\n}"
+				},
+				{
+					"name": "Successful Register",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"insuredId\": \"00002\",\n    \"scheduleId\": 1,\n    \"countryISO\": \"PE\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api_gw}}/api/appointment",
+							"host": [
+								"{{api_gw}}"
+							],
+							"path": [
+								"api",
+								"appointment"
+							]
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "127"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 28 May 2025 19:18:56 GMT"
+						},
+						{
+							"key": "X-Amzn-Trace-Id",
+							"value": "Root=1-6837619f-50162d135a40c85c03acbcb7;Parent=666a47dd4158908e;Sampled=0;Lineage=1:58979174:0"
+						},
+						{
+							"key": "x-amzn-RequestId",
+							"value": "cf1b83d6-c396-49ee-8b68-37a444ac10d3"
+						},
+						{
+							"key": "x-amz-apigw-id",
+							"value": "LSwxAH6jCYcEvRg="
+						},
+						{
+							"key": "X-Cache",
+							"value": "Miss from cloudfront"
+						},
+						{
+							"key": "Via",
+							"value": "1.1 e71240875fc0fe6791ea667677a66ce4.cloudfront.net (CloudFront)"
+						},
+						{
+							"key": "X-Amz-Cf-Pop",
+							"value": "GIG51-P1"
+						},
+						{
+							"key": "X-Amz-Cf-Id",
+							"value": "nUZTHtv5DFh_1AFW-Ih-K32Tk8lCIfkmqj5EAmVlTBd5BdJAoClhvw=="
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"statusCode\": 201,\n    \"statusText\": \"CREATED SUCCESSFUL\",\n    \"data\": [\n        {\n            \"insuredId\": \"00002\",\n            \"scheduleId\": 1,\n            \"countryISO\": \"PE\"\n        }\n    ],\n    \"error\": {}\n}"
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "id",
+			"value": "1"
+		},
+		{
+			"key": "api_gw",
+			"value": "https://kcriqwwrl8.execute-api.us-east-2.amazonaws.com/dev"
+		}
+	]
+}
