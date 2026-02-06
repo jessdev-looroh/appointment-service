@@ -40,7 +40,7 @@ export class MySQLAdapter implements Save, GetAllById {
      */
     async getAllById<K>(field: string, id: string, deleteItems: string[] = []): Promise<K[]> {
         const resp: K[] = await this.db.query(`select * from ${this.tableName} where ${field} = ?`, [id]);
-
+        await this.closeConnection();
         return resp.map((element) => {
             for (const item of deleteItems) {
                 delete (element as Record<string, any>)[item];
@@ -67,7 +67,7 @@ export class MySQLAdapter implements Save, GetAllById {
      * @returns {Promise<void>}
      * @private
      */
-    private async closeConnection() {
+    private async closeConnection(): Promise<void> {
         await this.db.end();
     }
 }

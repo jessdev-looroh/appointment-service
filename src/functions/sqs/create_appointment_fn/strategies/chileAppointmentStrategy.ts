@@ -1,16 +1,15 @@
 import { Appointment, AppointmentStatus, EventPublisher, Logger } from 'shared';
-import { CountryAppointmentStrategy } from '../interfaces';
-import { AppointmentRepositoryImpl } from '../repositories/appointmentRepository';
+import { AppointmentRepository, CountryAppointmentStrategy } from '../interfaces';
 
 /**
  * Class that provides a strategy for creating appointments in Chile
- * @param {AppointmentRepositoryImpl} appointmentRepository - The appointment repository
+ * @param {AppointmentRepository} appointmentRepository - The appointment repository
  * @param {Logger} logger - The logger instance
  * @param {EventPublisher} eventPublisher - The event publisher
  */
 export class ChileAppointmentStrategy implements CountryAppointmentStrategy {
     constructor(
-        private appointmentRepository: AppointmentRepositoryImpl,
+        private appointmentRepository: AppointmentRepository,
         private logger: Logger,
         private eventPublisher: EventPublisher,
     ) {}

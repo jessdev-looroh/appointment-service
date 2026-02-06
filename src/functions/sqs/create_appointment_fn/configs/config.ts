@@ -1,7 +1,6 @@
 import { DatabaseConfig, EventPublisher, Logger } from 'shared';
-import { CountryAppointmentStrategy } from '../interfaces';
+import { AppointmentRepository, CountryAppointmentStrategy } from '../interfaces';
 import { ChileAppointmentStrategy, PeruAppointmentStrategy } from '../strategies';
-import { AppointmentRepository } from '../interfaces/appointmentRepository';
 
 interface CountryConfig {
     eventBridge: {

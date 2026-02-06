@@ -294,6 +294,9 @@ Resources:
       Endpoint: !GetAtt NewAppointmentByCountrySQS.Arn
       Region: !Sub "${AWS::Region}"
       TopicArn: !Ref EventNewAppointmentSNS
+      # FilterPolicy:
+      #   countryISO:
+      #     - "PE"
 
   ##################### EVENTBRIDGE #######################
 
